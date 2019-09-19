@@ -1,5 +1,5 @@
 # PSRegistryParser
- 
+
 ## Usage
 
 `Import-Module path-to-parseRegistryFile.psm1`
