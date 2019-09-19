@@ -2,6 +2,16 @@ function Start-ParseRegFile {
   <#
     .Start-ParseRegFile
     Parameters: regFile
+    Returns a PSCustomObject with the registry settings found in the reg file.
+    e.g. PSCustomObject{ "key"=ArrayList(PSCustomObject{ "name, value, type" })}
+
+    e.g. Uses:
+    $obj = Start-ParseRegFile -regFile $regFile
+    $obj | ConvertTo-Json -Depth 3 -Compress
+    Returns a json string which can be saved to a file
+
+    $obj | Get-Member -MemberType NoteProperty | Select -ExpandProperty Name
+    Returns all the keys added to the first PSCustomObject.
   #>
   param (
     [String]$regFile
@@ -40,18 +50,19 @@ function Start-ParseRegFile {
         if ($_.Split('=')[1].EndsWith('\')) {
           $tempValue = $_.Split('=')[1].Split(':')[1].Trim('\')
           $tempType = $_.Split('=')[1].Split(':')[0]
-          Write-Host 'skip'
           return
         }
+        $tempValue = $_.Split('=')[1].Split(':')[1]
+        $tempType = $_.Split('=')[1].Split(':')[0]
       }
-      $tempValue = $_.Split('=')[1].Split(':')[1]
-      $tempType = $_.Split('=')[1].Split(':')[0]
       
-      $regFileKeys.$tempKey.Add([PSCustomObject]@{
+      $regFileKeys.$tempKey.Add(
+        [PSCustomObject]@{
           'name'  = $tempProperty
           'value' = $tempValue
           'type'  = $tempType
-        })
+        }
+      ) | Out-Null
       
       $tempProperty = ""
       $tempValue = ""
@@ -60,31 +71,22 @@ function Start-ParseRegFile {
     elseif ($tempValue -ne "") {
       if ($_.EndsWith('\')) {
         $tempValue += $_.TrimStart('  ').Trim('\')
-        Write-Host 'skip'
         return
       }
       $tempValue += $_.TrimStart('  ')
       
-      $regFileKeys.$tempKey.Add([PSCustomObject]@{
+      $regFileKeys.$tempKey.Add(
+        [PSCustomObject]@{
           'name'  = $tempProperty
           'value' = $tempValue
           'type'  = $tempType
-        })
+        }
+      ) | Out-Null
       
       $tempProperty = ""
       $tempValue = ""
       $tempType = ""
     }
-    else {
-      Write-Host $_
-    }
   }
-  
   return $regFileKeys
 }
- 
-$regFile = "C:\Github\PSRegistryParser\test.reg"
-
-$obj = Start-ParseRegFile -regFile $regFile
-$obj | Get-Member -MemberType NoteProperty | Select -ExpandProperty Name
-$obj
