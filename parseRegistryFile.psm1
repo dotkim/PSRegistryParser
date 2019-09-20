@@ -1,19 +1,26 @@
 function Start-ParseRegFile {
   <#
-    .Start-ParseRegFile
-    Parameters: regFile
-    Returns a PSCustomObject with the registry settings found in the reg file.
-    e.g. PSCustomObject{ "key"=ArrayList(PSCustomObject{ "name, value, type" })}
-
-    e.g. Uses:
-    $obj = Start-ParseRegFile -regFile $regFile
-    $obj | ConvertTo-Json -Depth 3 -Compress
-    Returns a json string which can be saved to a file
-
-    $obj | Get-Member -MemberType NoteProperty | Select -ExpandProperty Name
-    Returns all the keys added to the first PSCustomObject.
+    .SYNOPSIS
+      Returns a PSCustomObject with the registry settings found in the reg file.
+    .DESCRIPTION
+      Returns a PSCustomObject with the registry settings found in the reg file.
+    .PARAMETER regFile
+      The path to the .reg file
+    .EXAMPLE
+      $obj = Start-ParseRegFile -regFile $regFile
+      $obj | ConvertTo-Json -Depth 3 -Compress
+      Returns a json string which can be saved to a file
+    .EXAMPLE
+      $obj = Start-ParseRegFile -regFile $regFile
+      $obj | Get-Member -MemberType NoteProperty | Select -ExpandProperty Name
+      Returns all the keys added to the first PSCustomObject.
+    .NOTES
+      Returned obj structure
+      PSCustomObject@{ "key" = ArrayList@( PSCustomObject@{ "name"="name"; "value"="value"; "type"="type" } ) }
   #>
   param (
+    [Parameter(Mandatory=$true)]
+    [ValidateNotNullorEmpty()]
     [String]$regFile
   )
   
