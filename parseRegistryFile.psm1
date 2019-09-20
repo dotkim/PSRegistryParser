@@ -79,6 +79,8 @@ function Start-ParseRegFile {
         $tempType = $_.Split('=')[1].Split(':')[0]
       }
       
+      $tempValue = "0x" + $tempValue.Replace(",", ",0x")
+
       if ($TranslateTypes) {
         $tempType = $typeDictionary.$tempType
       }
@@ -102,10 +104,12 @@ function Start-ParseRegFile {
       }
       $tempValue += $_.TrimStart('  ')
       
+      $tempValue = "0x" + $tempValue.Replace(",", ",0x")
+
       if ($TranslateTypes) {
         $tempType = $typeDictionary.$tempType
       }
-      
+
       $regFileKeys.$tempKey.Add(
         [PSCustomObject]@{
           'name'  = $tempProperty
