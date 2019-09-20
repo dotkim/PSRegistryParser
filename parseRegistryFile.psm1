@@ -77,9 +77,9 @@ function Start-ParseRegFile {
         }
         $tempValue = $_.Split('=')[1].Split(':')[1]
         $tempType = $_.Split('=')[1].Split(':')[0]
+        $tempValue = "0x" + $tempValue.Replace(",", ",0x")
       }
       
-      $tempValue = "0x" + $tempValue.Replace(",", ",0x")
 
       if ($TranslateTypes) {
         $tempType = $typeDictionary.$tempType
